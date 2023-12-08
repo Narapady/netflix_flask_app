@@ -1,19 +1,24 @@
 import sqlite3
 
+import psycopg2
 from flask import Flask, jsonify
 
 from src.models.actor import Actor
 from src.models.movie import Movie
-from src.settings import DB_NAME
+from src.settings import DB_NAME, PASSWORD, USER
 
 app = Flask(__name__)
 
-app.config.from_mapping(DATABASE=DB_NAME)
+app.config.from_mapping(DATABASE=DB_NAME, USER=USER, PASSWORD=PASSWORD)
 
 
 @app.route("/movies")
-def movies():
-    conn = sqlite3.connect(app.config["DATABASE"])
+def titles():
+    conn = psycopg2.connect(
+        database=app.config["DB_NAME"],
+        user=app.config["USER"],
+        password=app.config["PASSWORD"],
+    )
     cursor = conn.cursor()
     cursor.execute("select * from movies;")
     movie_records = cursor.fetchall()
