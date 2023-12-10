@@ -1,19 +1,8 @@
+import pandas as pd
+
+
 class Title:
-    columns = [
-        "id",
-        "title_id",
-        "type",
-        "description",
-        "release_year",
-        "age",
-        "certificatin",
-        "runtime",
-        "genres",
-        "production_country",
-        "seasons",
-        "imdb_score",
-        "imdb_votes",
-    ]
+    columns = pd.read_csv("./data/titles_cleans.csv").columns
 
     def __init__(self, values):
         self.__dict__ = dict(zip(self.columns, values))
