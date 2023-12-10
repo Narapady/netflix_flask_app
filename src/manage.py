@@ -1,52 +1,62 @@
-import sqlite3
-
 import psycopg2
 from flask import Flask, jsonify
 
-from src.models.actor import Actor
-from src.models.movie import Movie
+from src.models.credit import Credit
+from src.models.title import Title
 from src.settings import DB_NAME, PASSWORD, USER
 
 app = Flask(__name__)
 
-app.config.from_mapping(DATABASE=DB_NAME, USER=USER, PASSWORD=PASSWORD)
 
-
-@app.route("/movies")
+@app.route("/titles")
 def titles():
     conn = psycopg2.connect(
-        database=app.config["DB_NAME"],
-        user=app.config["USER"],
-        password=app.config["PASSWORD"],
+        database=DB_NAME,
+        user=USER,
+        password=PASSWORD,
     )
     cursor = conn.cursor()
-    cursor.execute("select * from movies;")
-    movie_records = cursor.fetchall()
-    return jsonify([Movie(movie_record).__dict__ for movie_record in movie_records])
+    cursor.execute("select * from title;")
+    title_records = cursor.fetchall()
+    return jsonify([Title(title_record).__dict__ for title_record in title_records])
 
 
-@app.route("/movies/<id>")
-def show_movie(id):
-    conn = sqlite3.connect(app.config["DATABASE"])
+@app.route("/titles/<id>")
+def show_title(id: int):
+    conn = psycopg2.connect(
+        database=DB_NAME,
+        user=USER,
+        password=PASSWORD,
+    )
     cursor = conn.cursor()
-    cursor.execute("select * from movies where id = ?;", (id,))
-    movie_records = cursor.fetchall()
-    return jsonify([Movie(movie_record).__dict__ for movie_record in movie_records][0])
+    cursor.execute("select * from title where id = %s;", (id,))
+    title_records = cursor.fetchall()
+    return jsonify([Title(title_record).__dict__ for title_record in title_records][0])
 
 
-@app.route("/actors")
-def actors():
-    conn = sqlite3.connect(app.config["DATABASE"])
+@app.route("/credits")
+def credits():
+    conn = psycopg2.connect(
+        database=DB_NAME,
+        user=USER,
+        password=PASSWORD,
+    )
     cursor = conn.cursor()
-    cursor.execute("select * from actors;")
-    actor_records = cursor.fetchall()
-    return jsonify([Actor(actor_record).__dict__ for actor_record in actor_records])
+    cursor.execute("select * from credit;")
+    credit_records = cursor.fetchall()
+    return jsonify([Credit(credit_record).__dict__ for credit_record in credit_records])
 
 
-@app.route("/actors/<id>")
-def show_actor(id):
-    conn = sqlite3.connect(app.config["DATABASE"])
+@app.route("/credits/<id>")
+def show_credit(id: int):
+    conn = psycopg2.connect(
+        database=DB_NAME,
+        user=USER,
+        password=PASSWORD,
+    )
     cursor = conn.cursor()
-    cursor.execute("select * from actors where id = ?;", (id,))
-    actor_records = cursor.fetchall()
-    return jsonify([Actor(actor_record).__dict__ for actor_record in actor_records])
+    cursor.execute("select * from credit where id = %s;", (id,))
+    credit_records = cursor.fetchall()
+    return jsonify(
+        [Credit(credit_record).__dict__ for credit_record in credit_records][0]
+    )
