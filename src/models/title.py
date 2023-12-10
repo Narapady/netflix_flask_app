@@ -9,6 +9,12 @@ class Title:
 
     @classmethod
     def highest_imdb_score(self, cursor):
-        sql = "select * from title order by imdb_score desc limit 1"
+        sql = """
+        --sql
+        SELECT * 
+        FROM title
+        WHERE imdb_score IS NOT NULL 
+        ORDER BY imdb_score DESC LIMIT 1
+        """
         cursor.execute(sql)
         return cursor.fetchone()
