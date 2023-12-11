@@ -1,4 +1,12 @@
 import pandas as pd
+from flask import request
+
+
+def build_query_args(model):
+    keys = model.columns
+    values = [request.args.get(col) for col in model.columns]
+    query_args = dict(zip(keys, values))
+    return {k: v for k, v in query_args.items() if v is not None}
 
 
 def bulid_insert_query(model):
