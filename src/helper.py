@@ -9,6 +9,14 @@ def build_query_args(model):
     return {k: v for k, v in query_args.items() if v is not None}
 
 
+def build_query_from_args(model):
+    query_args = build_query_args(model)
+    sql_str = "select * from title where "
+    for k, v in query_args.items():
+        sql_str += f"{k} = %s and "
+    return sql_str[:-5] + ";"
+
+
 def bulid_insert_query(model):
     cols = pd.read_csv(f"./data/{model}s_cleans.csv").columns
     insert_into = f"INSERT INTO {model} ({[col for col in cols]})\

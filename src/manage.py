@@ -1,7 +1,7 @@
 import psycopg2
 from flask import Flask, jsonify
 
-from src.helper import build_query_args
+from src.helper import build_query_args, build_query_from_args
 from src.models.credit import Credit
 from src.models.title import Title
 from src.settings import DB_NAME, PASSWORD, USER
@@ -17,16 +17,13 @@ def titles():
         password=PASSWORD,
     )
     cursor = conn.cursor()
+
     query_args = build_query_args(Title)
+    sql = build_query_from_args(Title)
 
-    if query_args:
-        sql_str = "select * from title where "
-        for k, v in query_args.items():
-            sql_str += f"{k} = %s and "
-        sql_str = sql_str[:-5] + ";"
-
+    if sql:
         cursor.execute(
-            sql_str,
+            sql,
             tuple(
                 query_args.values(),
             ),
@@ -60,15 +57,11 @@ def credits():
     )
     cursor = conn.cursor()
     query_args = build_query_args(Credit)
+    sql = build_query_from_args(Credit)
 
-    if query_args:
-        sql_str = "select * from credit where "
-        for k, v in query_args.items():
-            sql_str += f"{k} = %s and "
-        sql_str = sql_str[:-5] + ";"
-
+    if sql:
         cursor.execute(
-            sql_str,
+            sql,
             tuple(
                 query_args.values(),
             ),
