@@ -1,4 +1,5 @@
 import pandas as pd
+import psycopg2
 
 
 class Title:
@@ -18,3 +19,10 @@ class Title:
         """
         cursor.execute(sql)
         return cursor.fetchone()
+
+    @classmethod
+    def action_films(self, db: str, user: str, password: str):
+        conn = psycopg2.connect(database=db, user=user, password=password)
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM title WHERE genres LIKE '%action%';")
+        return cursor.fetchall()

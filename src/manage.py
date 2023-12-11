@@ -65,9 +65,27 @@ def credits():
         password=PASSWORD,
     )
     cursor = conn.cursor()
-    cursor.execute("select * from credit;")
-    credit_records = cursor.fetchall()
-    return jsonify([Credit(credit_record).__dict__ for credit_record in credit_records])
+    query_args = build_query_args(Title)
+
+    if query_args:
+        sql_str = "select * from credit where "
+        for k, v in query_args.items():
+            sql_str += f"{k} = %s and "
+        sql_str = sql_str[:-5] + ";"
+
+        cursor.execute(
+            sql_str,
+            tuple(
+                query_args.values(),
+            ),
+        )
+    else:
+        cursor.execute("select * from credits;")
+
+    credits_records = cursor.fetchall()
+    return jsonify(
+        [Credit()(credits_record).__dict__ for credits_record in credits_records]
+    )
 
 
 @app.route("/credits/<id>")
